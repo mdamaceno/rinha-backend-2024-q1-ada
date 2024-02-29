@@ -1,0 +1,13 @@
+name = "rinha_2024_q1_ada"
+description = "Shiny new project"
+version = "0.1.0-dev"
+
+authors = ["Marco Damaceno"]
+maintainers = ["Marco Damaceno <maadamaceno@gmail.com>"]
+maintainers-logins = ["mdamaceno"]
+
+executables = ["rinha_2024_q1_ada"]
+[[depends-on]]
+aws = "^23.0.0"
+[[depends-on]]
+json = "^5.0.3"
