@@ -16,7 +16,6 @@ package body Api_CB is
       P_2 : constant String := "/extrato";
       F   : constant String := URI (URI'First + 10 .. URI'Last);
       Idx : Natural;
-      N   : Natural := 0;
 
    begin
       if Ada.Strings.Fixed.Index (F, P_1) > 0 then
