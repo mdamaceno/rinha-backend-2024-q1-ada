@@ -5,6 +5,8 @@ with Ada.Strings.Fixed;
 with AWS.MIME; use AWS.MIME;
 with AWS.Messages; use AWS.Messages;
 
+with Response_Map;
+
 package body Api_CB is
 
    subtype Accepted_ID is Integer range 0 .. 5;
@@ -43,7 +45,7 @@ package body Api_CB is
 
    begin
       return AWS.Response.Build
-         (Application_JSON, "{""message"":""Hello, world! POST""}");
+         (Application_JSON, Response_Map.Transaction_JSON);
    end Post;
 
    function Service (Request : AWS.Status.Data) return AWS.Response.Data is
