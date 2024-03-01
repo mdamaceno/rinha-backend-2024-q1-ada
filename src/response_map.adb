@@ -6,17 +6,15 @@ package body Response_Map is
    use GNATCOLL.JSON;
 
    function Transaction_JSON(
-      Amount : Integer := 0;
-      Kind   : String := "";
-      Description : String := ""
+      Balance : Integer := 0;
+      Credit_Limit : Integer := 0
    ) return String is
 
       Transaction : constant JSON_Value := Create_Object;
 
    begin
-      Transaction.Set_Field (Field_Name => "valor", Field => Amount);
-      Transaction.Set_Field (Field_Name => "tipo", Field => Kind);
-      Transaction.Set_Field (Field_Name => "descricao", Field => Description);
+      Transaction.Set_Field (Field_Name => "limite", Field => Balance);
+      Transaction.Set_Field (Field_Name => "saldo", Field => Credit_Limit);
 
       return Transaction.Write;
    end Transaction_JSON;

@@ -1,7 +1,6 @@
 package Response_Map is
    function Transaction_JSON(
-      Amount : Integer := 0;
-      Kind   : String := "";
-      Description : String := ""
+      Balance : Integer := 0;
+      Credit_Limit : Integer := 0
    ) return String;
 end Response_Map;
