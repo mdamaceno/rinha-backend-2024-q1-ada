@@ -20,7 +20,8 @@ begin
 
    AWS.Server.Log.Start (WS, Split_Mode => AWS.Log.Daily);
 
-   AWS.Server.Wait (AWS.Server.Q_Key_Pressed);
+   loop
+      null;
+   end loop;
 
-   AWS.Server.Shutdown (WS);
 end Rinha_2024_Q1_Ada;
