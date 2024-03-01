@@ -11,7 +11,6 @@ procedure Rinha_2024_Q1_Ada is
 
 begin
    Ada.Text_IO.Put_Line ("AWS " & AWS.Version);
-   Ada.Text_IO.Put_Line ("Enter 'q' key to exit...");
 
    AWS.Server.Start
      (WS, "Rinha de Backend Q1 2024",
