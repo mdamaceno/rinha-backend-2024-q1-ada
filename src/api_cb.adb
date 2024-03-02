@@ -5,7 +5,7 @@ with Ada.Strings.Fixed;
 with AWS.MIME;
 with AWS.Messages;
 
-with Request_Map;
+with Helper.Request;
 with Response_Map;
 
 package body Api_CB is
@@ -45,7 +45,7 @@ package body Api_CB is
 
    function Post (Request : AWS.Status.Data) return AWS.Response.Data is
       URI      : constant String := AWS.Status.URI (Request);
-      Req_Body : constant String_Access := Request_Map.Get_Body_Content (Request);
+      Req_Body : constant String_Access := Helper.Request.Get_Body_Content (Request);
       Str      : constant String := Req_Body.all;
 
    begin

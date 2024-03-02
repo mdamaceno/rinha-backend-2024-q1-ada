@@ -1,6 +1,6 @@
 with Ada.Streams;
 
-package body Request_Map is
+package body Helper.Request is
    function Get_Body_Content
       (Request : AWS.Status.Data) return String_Access is
          Binary_Size   : constant Ada.Streams.Stream_Element_Offset := AWS.Status.Binary_Size (Request);
@@ -21,4 +21,4 @@ package body Request_Map is
          end loop;
       end return;
    end Get_Body_Content;
-end Request_Map;
+end Helper.Request;
