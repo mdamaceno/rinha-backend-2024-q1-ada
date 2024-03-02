@@ -9,7 +9,7 @@ package body Helper.Request is
          Str_Index     : Integer := 1;
    begin
       return Body_Content : constant String_Access := new String (1 .. Integer (Binary_Size)) do
-         while True loop
+         loop
             AWS.Status.Read_Body (Request, Stream_Buffer, Stream_Index);
 
             for I in 1 .. Stream_Index loop
