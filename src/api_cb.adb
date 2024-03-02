@@ -1,10 +1,11 @@
-with Ada.Text_IO;
+with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Strings;
 with Ada.Strings.Fixed;
 
-with AWS.MIME; use AWS.MIME;
-with AWS.Messages; use AWS.Messages;
+with AWS.MIME;
+with AWS.Messages;
 
+with Request_Map;
 with Response_Map;
 
 package body Api_CB is
@@ -37,15 +38,22 @@ package body Api_CB is
 
    begin
       return AWS.Response.Build
-         (Application_JSON, "{""message"":""Hello, world! GET""}");
+         (AWS.MIME.Application_JSON, Response_Map.Statement_JSON
+            (Total => 100, Credit_Limit => 1000)
+         );
    end Get;
 
    function Post (Request : AWS.Status.Data) return AWS.Response.Data is
-      URI   : constant String := AWS.Status.URI (Request);
+      URI      : constant String := AWS.Status.URI (Request);
+      Req_Body : constant String_Access := Request_Map.Get_Body_Content (Request);
+      Str      : constant String := Req_Body.all;
 
    begin
+      Put_Line (Str);
       return AWS.Response.Build
-         (Application_JSON, Response_Map.Transaction_JSON);
+         (AWS.MIME.Application_JSON, Response_Map.Transaction_JSON
+            (Balance => 100, Credit_Limit => 1000)
+         );
    end Post;
 
    function Service (Request : AWS.Status.Data) return AWS.Response.Data is
@@ -57,7 +65,7 @@ package body Api_CB is
    begin
       if ID = 0 then
          return AWS.Response.Build
-            (Application_JSON, "{""error"":""Not found""}", S404);
+            (AWS.MIME.Application_JSON, "{""error"":""Not found""}", AWS.Messages.S404);
       end if;
 
       if AWS.Status.Method (Request) = AWS.Status.GET then
@@ -66,7 +74,8 @@ package body Api_CB is
          return Post (Request);
       else
          return AWS.Response.Build
-            (Application_JSON, "{""error"":""Method Not Allowed""}", S405);
+            (AWS.MIME.Application_JSON, "{""error"":""Method Not Allowed""}", AWS.Messages.S405);
       end if;
    end Service;
+
 end Api_CB;
