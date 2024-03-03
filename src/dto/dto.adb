@@ -7,6 +7,7 @@ package body DTO is
       Data : constant JSON_Value := Read (Str);
       T    : Transaction;
       Invalid_Description_Length : exception;
+      InValid_Kind : exception;
    begin
       T.Description := Trim (Data.Get ("descricao"), Ada.Strings.Both);
 
@@ -14,8 +15,13 @@ package body DTO is
          raise Invalid_Description_Length;
       end if;
 
-      T.Amount := Data.Get ("valor");
       T.Kind := Data.Get ("tipo");
+
+      if T.Kind /= "c" and then T.Kind /= "d" then
+         raise InValid_Kind;
+      end if;
+
+      T.Amount := Data.Get ("valor");
 
       return T;
    end Make_Transaction_From_JSON;
