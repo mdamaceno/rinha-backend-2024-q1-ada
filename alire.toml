@@ -11,3 +11,5 @@ executables = ["rinha_2024_q1_ada"]
 aws = "^23.0.0"
 [[depends-on]]
 utilada = "^2.6.0"
+[[depends-on]]
+gnatcoll_postgres = "^23.0.0"
