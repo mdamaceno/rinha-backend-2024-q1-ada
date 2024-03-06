@@ -13,8 +13,8 @@ package body Response_Map is
       Transaction : constant JSON_Value := Create_Object;
 
    begin
-      Transaction.Set_Field (Field_Name => "limite", Field => Balance);
-      Transaction.Set_Field (Field_Name => "saldo", Field => Credit_Limit);
+      Transaction.Set_Field (Field_Name => "limite", Field => Credit_Limit);
+      Transaction.Set_Field (Field_Name => "saldo", Field => Balance);
 
       return Transaction.Write;
    end Transaction_JSON;

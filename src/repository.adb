@@ -5,13 +5,15 @@ with GNATCOLL.SQL;  use GNATCOLL.SQL;
 with Database; use Database;
 
 package body Repository is
-   Last_Inserted_Stmt : Prepared_Statement := Prepare
-      ("SELECT id, amount, kind, description, account_id FROM ledgers ORDER BY id DESC LIMIT 1");
+   Select_Accounts_Stmt : Prepared_Statement := Prepare
+      ("SELECT id, credit_limit, balance FROM accounts", Use_Cache => False, Index_By => Field_Index'First);
 
-   function Create_Transaction (DB_Conn : Database_Connection; Ledger : Models.Ledger_M) return Models.Ledger_M is
+   function Create_Transaction (DB_Conn : Database_Connection; Ledger : Models.Ledger_M) return Models.Account_M is
       Q          : SQL_Query;
       Ledgers_T  : Database.Public.T_Public_Ledgers := Database.Public.Ledgers;
       DB         : Database_Connection := DB_Conn;
+
+      Insufficient_Funds : exception;
 
    begin
       Q := SQL_Insert
@@ -24,27 +26,39 @@ package body Repository is
 
       Execute (DB, Q);
 
-      Commit (DB);
+      declare
+         Account : Models.Account_M;
+      begin
+         Account := Get_Account (DB, Ledger.Account_Id);
 
-      return Last_Inserted (DB);
+         if Account.Balance < -(Account.Credit_Limit) then
+            Account.Error := 1;
+
+            Rollback (DB);
+         else
+            Commit (DB);
+         end if;
+
+         return Account;
+      end;
    end Create_Transaction;
 
-   function Last_Inserted (DB_Conn : Database_Connection) return Models.Ledger_M is
+   function Get_Account (DB_Conn : Database_Connection; Account_Id : Positive) return Models.Account_M is
       CI         : Direct_Cursor;
       DB         : Database_Connection := DB_Conn;
-      Ledger     : Models.Ledger_M;
+      Account    : Models.Account_M;
    begin
-      CI.Fetch (DB, Last_Inserted_Stmt);
-      CI.First;
+      CI.Fetch (DB, Select_Accounts_Stmt);
+      CI.Find (Account_Id);
 
-      Ledger.Id := Positive'Value (CI.Value (0));
-      Ledger.Amount := Positive'Value (CI.Value (1));
-      Ledger.Kind := Models.Kind_T'Value (To_Upper (CI.Value (2)));
-      Ledger.Description := To_Unbounded_String (CI.Value (3));
-      Ledger.Account_Id := Integer'Value (CI.Value (4));
+      Put_Line (CI.Value (0));
+      Put_Line (CI.Value (1));
+      Put_Line (CI.Value (2));
 
-      Put_Line ("Last_Inserted: " & Ledger.Id'Image & " " & Ledger.Amount'Image & " " & Models.Kind_T'Image (Ledger.Kind) & " " & To_String (Ledger.Description) & " " & Ledger.Account_Id'Image);
+      Account.Id := Positive'Value (CI.Value (0));
+      Account.Credit_Limit := Integer'Value (CI.Value (1));
+      Account.Balance := Integer'Value (CI.Value (2));
 
-      return Ledger;
-   end Last_Inserted;
+      return Account;
+   end Get_Account;
 end Repository;

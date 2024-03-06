@@ -65,15 +65,20 @@ package body Api_CB is
       Ledger.Kind := Models.Kind_T'Value (T.Kind);
 
       declare
-         Result : Models.Ledger_M;
+         Result : Models.Account_M;
       begin
          Result := Repository.Create_Transaction(DB_Conn, Ledger);
-      end;
 
-      return AWS.Response.Build
-         (AWS.MIME.Application_JSON, Response_Map.Transaction_JSON
-            (Balance => 100, Credit_Limit => 1000)
-         );
+         if Result.Error = 1 then
+            return AWS.Response.Build
+               (AWS.MIME.Application_JSON, "{""error"":""Exceeded credit limits""}", AWS.Messages.S422);
+         end if;
+
+         return AWS.Response.Build
+            (AWS.MIME.Application_JSON, Response_Map.Transaction_JSON
+               (Result.Balance, Result.Credit_Limit)
+            );
+      end;
    end Post;
 
    function Service (Request : AWS.Status.Data) return AWS.Response.Data is
