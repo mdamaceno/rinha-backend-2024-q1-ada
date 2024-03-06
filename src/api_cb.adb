@@ -28,6 +28,10 @@ package body Api_CB is
       Idx : Natural;
 
    begin
+      if URI (URI'First .. URI'First + 9) /= "/clientes/" then
+         return 0;
+      end if;
+
       if Ada.Strings.Fixed.Index (F, P_1) > 0 then
          Idx := Ada.Strings.Fixed.Index (F, P_1);
          return Integer'Value
