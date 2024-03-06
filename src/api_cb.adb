@@ -1,6 +1,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Strings;
 with Ada.Strings.Fixed;
+with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 
 with AWS.MIME;
 with AWS.Messages;
@@ -15,10 +16,9 @@ with DB_Connection;
 with Models;
 
 package body Api_CB is
-
    subtype Accepted_ID is Integer range 0 .. 5;
 
-   DB_Conn : Database_Connection := DB_Connection.Init;
+   DB_Conn : constant Database_Connection := DB_Connection.Init;
 
    function Account_ID (URI : String) return Accepted_ID;
 
@@ -31,11 +31,13 @@ package body Api_CB is
    begin
       if Ada.Strings.Fixed.Index (F, P_1) > 0 then
          Idx := Ada.Strings.Fixed.Index (F, P_1);
-         return Integer'Value (Ada.Strings.Fixed.Delete (F, Idx, Idx + P_1'Length - 1));
+         return Integer'Value
+            (Ada.Strings.Fixed.Delete (F, Idx, Idx + P_1'Length - 1));
       end if;
 
       Idx := Ada.Strings.Fixed.Index (F, P_2);
-      return Integer'Value (Ada.Strings.Fixed.Delete (F, Idx, Idx + P_2'Length - 1));
+      return Integer'Value
+         (Ada.Strings.Fixed.Delete (F, Idx, Idx + P_2'Length - 1));
 
    exception
       when Constraint_Error =>
@@ -53,9 +55,11 @@ package body Api_CB is
 
    function Post (Request : AWS.Status.Data) return AWS.Response.Data is
       URI      : constant String := AWS.Status.URI (Request);
-      Req_Body : constant String_Access := Helper.Request.Get_Body_Content (Request);
+      Req_Body : constant String_Access :=
+         Helper.Request.Get_Body_Content (Request);
       Str      : constant String := Req_Body.all;
-      T        : DTO.Transaction := DTO.Make_Transaction_From_JSON (Str);
+      T        : constant DTO.Transaction :=
+         DTO.Make_Transaction_From_JSON (Str);
       Ledger   : Models.Ledger_M;
 
    begin
@@ -67,11 +71,12 @@ package body Api_CB is
       declare
          Result : Models.Account_M;
       begin
-         Result := Repository.Create_Transaction(DB_Conn, Ledger);
+         Result := Repository.Create_Transaction (DB_Conn, Ledger);
 
          if Result.Error = 1 then
             return AWS.Response.Build
-               (AWS.MIME.Application_JSON, "{""error"":""Exceeded credit limits""}", AWS.Messages.S422);
+               (AWS.MIME.Application_JSON,
+               "{""error"":""Exceeded credit limits""}", AWS.Messages.S422);
          end if;
 
          return AWS.Response.Build
@@ -90,7 +95,8 @@ package body Api_CB is
    begin
       if ID = 0 then
          return AWS.Response.Build
-            (AWS.MIME.Application_JSON, "{""error"":""Not found""}", AWS.Messages.S404);
+            (AWS.MIME.Application_JSON,
+            "{""error"":""Not found""}", AWS.Messages.S404);
       end if;
 
       if AWS.Status.Method (Request) = AWS.Status.GET then
@@ -99,7 +105,8 @@ package body Api_CB is
          return Post (Request);
       else
          return AWS.Response.Build
-            (AWS.MIME.Application_JSON, "{""error"":""Method Not Allowed""}", AWS.Messages.S405);
+            (AWS.MIME.Application_JSON,
+            "{""error"":""Method Not Allowed""}", AWS.Messages.S405);
       end if;
    end Service;
 

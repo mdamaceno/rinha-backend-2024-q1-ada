@@ -1,4 +1,3 @@
-with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with Ada.Characters.Handling; use Ada.Characters.Handling;
 with GNATCOLL.SQL;  use GNATCOLL.SQL;
@@ -50,10 +49,6 @@ package body Repository is
    begin
       CI.Fetch (DB, Select_Accounts_Stmt);
       CI.Find (Account_Id);
-
-      Put_Line (CI.Value (0));
-      Put_Line (CI.Value (1));
-      Put_Line (CI.Value (2));
 
       Account.Id := Positive'Value (CI.Value (0));
       Account.Credit_Limit := Integer'Value (CI.Value (1));
