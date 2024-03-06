@@ -1,4 +1,3 @@
-with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Strings;
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
@@ -45,12 +44,12 @@ package body Api_CB is
    end Account_ID;
 
    function Get (Request : AWS.Status.Data) return AWS.Response.Data is
-
+      URI       : constant String := AWS.Status.URI (Request);
+      Statement : constant Models.Statement_M :=
+         Repository.Get_Last_Transactions (DB_Conn, Account_ID (URI));
    begin
       return AWS.Response.Build
-         (AWS.MIME.Application_JSON, Response_Map.Statement_JSON
-            (Total => 100, Credit_Limit => 1000)
-         );
+         (AWS.MIME.Application_JSON, Response_Map.Statement_JSON (Statement));
    end Get;
 
    function Post (Request : AWS.Status.Data) return AWS.Response.Data is
