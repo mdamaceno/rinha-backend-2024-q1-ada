@@ -14,7 +14,7 @@ procedure Rinha_2024_Q1_Ada is
 
 begin
    AWS.Config.Set.Reuse_Address (AWS_Config, True);
-   AWS.Config.Set.Server_Port (AWS_Config, 8080);
+   AWS.Config.Set.Server_Port (AWS_Config, 9999);
 
    Ada.Text_IO.Put_Line ("AWS " & AWS.Version);
    AWS.Server.Start (WS, Callback => Api_CB.Service'Access, Config => AWS_Config);
