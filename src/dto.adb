@@ -24,5 +24,18 @@ package body DTO is
       T.Amount := Data.Get ("valor");
 
       return T;
+   exception
+      when Constraint_Error =>
+         T.Error := 1;
+         return T;
+      when Invalid_Description_Length =>
+         T.Error := 1;
+         return T;
+      when InValid_Kind =>
+         T.Error := 1;
+         return T;
+      when others =>
+         T.Error := 99;
+         return T;
    end Make_Transaction_From_JSON;
 end DTO;

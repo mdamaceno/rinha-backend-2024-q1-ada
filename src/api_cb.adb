@@ -62,6 +62,12 @@ package body Api_CB is
       Ledger   : Models.Ledger_M;
 
    begin
+      if T.Error > 0 then
+         return AWS.Response.Build
+            (AWS.MIME.Application_JSON,
+            "{""error"":""Invalid JSON""}", AWS.Messages.S422);
+      end if;
+
       Ledger.Account_Id := Account_ID (URI);
       Ledger.Amount := T.Amount;
       Ledger.Description := T.Description;
