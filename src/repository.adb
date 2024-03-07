@@ -1,18 +1,21 @@
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with Ada.Characters.Handling; use Ada.Characters.Handling;
 with GNATCOLL.SQL;  use GNATCOLL.SQL;
+with GNATCOLL.SQL.Sessions; use GNATCOLL.SQL.Sessions;
 with Database;
 
 package body Repository is
    Select_Accounts_Stmt : constant Prepared_Statement := Prepare
       ("SELECT id, credit_limit, balance FROM accounts", Use_Cache => False, Index_By => Field_Index'First);
 
-   function Create_Transaction (DB_Conn : Database_Connection; Ledger : Models.Ledger_M) return Models.Account_M is
+   function Create_Transaction (Ledger : Models.Ledger_M) return Models.Account_M is
       Q          : SQL_Query;
       Ledgers_T  : constant Database.Public.T_Public_Ledgers := Database.Public.Ledgers;
-      DB         : constant Database_Connection := DB_Conn;
+      DB         : Database_Connection;
+      Session : constant Session_Type := Get_New_Session;
 
    begin
+      DB := Session.DB;
       Q := SQL_Insert
          (
             Values => (Ledgers_T.Amount = Ledger.Amount) &
@@ -26,7 +29,7 @@ package body Repository is
       declare
          Account : Models.Account_M;
       begin
-         Account := Get_Account (DB, Ledger.Account_Id);
+         Account := Get_Account (Ledger.Account_Id);
 
          if Account.Balance < -(Account.Credit_Limit) then
             Account.Error := 1;
@@ -41,13 +44,14 @@ package body Repository is
    end Create_Transaction;
 
    function Get_Account (
-      DB_Conn    : Database_Connection;
       Account_Id : Positive
    ) return Models.Account_M is
       CI         : Direct_Cursor;
-      DB         : constant Database_Connection := DB_Conn;
+      DB         : Database_Connection;
       Account    : Models.Account_M;
+      Session : constant Session_Type := Get_New_Session;
    begin
+      DB := Session.DB;
       CI.Fetch (DB, Select_Accounts_Stmt);
       CI.Find (Account_Id);
 
@@ -60,21 +64,22 @@ package body Repository is
 
    function Get_Last_Transactions
       (
-         DB_Conn    : Database_Connection;
          Account_Id : Positive;
          Limit      : Positive := 10
       ) return Models.Statement_M is
 
       Q          : SQL_Query;
-      DB         : constant Database_Connection := DB_Conn;
+      DB         : Database_Connection;
       Ledgers_T  : constant Database.Public.T_Public_Ledgers :=
          Database.Public.Ledgers;
       Account    : Models.Account_M;
       Ledger     : Models.Ledger_M;
       Statement  : Models.Statement_M;
+      Session : constant Session_Type := Get_New_Session;
 
    begin
-      Account := Get_Account (DB, Account_Id);
+      DB := Session.DB;
+      Account := Get_Account (Account_Id);
 
       Statement.Balance := Account.Balance;
       Statement.Credit_Limit := Account.Credit_Limit;

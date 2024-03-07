@@ -5,19 +5,14 @@ with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with AWS.MIME;
 with AWS.Messages;
 
-with GNATCOLL.SQL.Exec; use GNATCOLL.SQL.Exec;
-
 with Helper.Request;
 with Response_Map;
 with DTO;
 with Repository;
-with DB_Connection;
 with Models;
 
 package body Api_CB is
    subtype Accepted_ID is Integer range 0 .. 5;
-
-   DB_Conn : constant Database_Connection := DB_Connection.Init;
 
    function Account_ID (URI : String) return Accepted_ID;
 
@@ -49,9 +44,10 @@ package body Api_CB is
 
    function Get (Request : AWS.Status.Data) return AWS.Response.Data is
       URI       : constant String := AWS.Status.URI (Request);
-      Statement : constant Models.Statement_M :=
-         Repository.Get_Last_Transactions (DB_Conn, Account_ID (URI));
+      Statement : Models.Statement_M;
    begin
+      Statement := Repository.Get_Last_Transactions (Account_ID (URI));
+
       return AWS.Response.Build
          (AWS.MIME.Application_JSON, Response_Map.Statement_JSON (Statement));
    end Get;
@@ -74,7 +70,7 @@ package body Api_CB is
       declare
          Result : Models.Account_M;
       begin
-         Result := Repository.Create_Transaction (DB_Conn, Ledger);
+         Result := Repository.Create_Transaction (Ledger);
 
          if Result.Error = 1 then
             return AWS.Response.Build

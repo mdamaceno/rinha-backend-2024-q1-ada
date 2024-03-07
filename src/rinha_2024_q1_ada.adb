@@ -6,6 +6,7 @@ with AWS.Config;
 with AWS.Config.Set;
 
 with Api_CB;
+with DB_Connection;
 
 procedure Rinha_2024_Q1_Ada is
 
@@ -13,6 +14,8 @@ procedure Rinha_2024_Q1_Ada is
    AWS_Config      : AWS.Config.Object := AWS.Config.Default_Config;
 
 begin
+   DB_Connection.Init;
+
    AWS.Config.Set.Reuse_Address (AWS_Config, True);
    AWS.Config.Set.Server_Port (AWS_Config, 9999);
 

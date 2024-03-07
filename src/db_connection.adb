@@ -1,15 +1,26 @@
+with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
+with Ada.Environment_Variables;
 with GNATCOLL.SQL.Postgres; use GNATCOLL.SQL.Postgres;
+with GNATCOLL.SQL.Sessions;
 
 package body DB_Connection is
-   function Init return Database_Connection is
+   procedure Init is
       DB_Descr : Database_Description;
+      DB_Host  : Unbounded_String;
    begin
+      if Ada.Environment_Variables.Exists ("DB_HOST") then
+         DB_Host := To_Unbounded_String
+            (Ada.Environment_Variables.Value ("DB_HOST"));
+      else
+         DB_Host := To_Unbounded_String ("localhost");
+      end if;
+
       DB_Descr := Setup ("rinha2024",
                      User => "postgres",
                      Password => "postgres",
-                     Host => "localhost",
+                     Host => To_String (DB_Host),
                      Port => 5432);
 
-      return DB_Descr.Build_Connection;
+      GNATCOLL.SQL.Sessions.Setup (Descr => DB_Descr, Max_Sessions => 30);
    end Init;
 end DB_Connection;
