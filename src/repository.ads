@@ -1,4 +1,3 @@
-with GNATCOLL.SQL.Exec; use GNATCOLL.SQL.Exec;
 with Models;
 
 package Repository is

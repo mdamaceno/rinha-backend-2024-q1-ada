@@ -1,6 +1,8 @@
+with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with Ada.Characters.Handling; use Ada.Characters.Handling;
 with GNATCOLL.SQL;  use GNATCOLL.SQL;
+with GNATCOLL.SQL.Exec; use GNATCOLL.SQL.Exec;
 with GNATCOLL.SQL.Sessions; use GNATCOLL.SQL.Sessions;
 with Database;
 
@@ -11,11 +13,9 @@ package body Repository is
    function Create_Transaction (Ledger : Models.Ledger_M) return Models.Account_M is
       Q          : SQL_Query;
       Ledgers_T  : constant Database.Public.T_Public_Ledgers := Database.Public.Ledgers;
-      DB         : Database_Connection;
       Session : constant Session_Type := Get_New_Session;
 
    begin
-      DB := Session.DB;
       Q := SQL_Insert
          (
             Values => (Ledgers_T.Amount = Ledger.Amount) &
@@ -24,19 +24,22 @@ package body Repository is
                       (Ledgers_T.Account_Id = Ledger.Account_Id)
          );
 
-      Execute (DB, Q);
-
       declare
          Account : Models.Account_M;
+         DB      : Database_Connection;
       begin
+         DB := Session.DB;
+
          Account := Get_Account (Ledger.Account_Id);
 
-         if Account.Balance < -(Account.Credit_Limit) then
-            Account.Error := 1;
+         Execute (DB, Q);
 
-            Rollback (DB);
-         else
+         if Success (DB) then
             Commit (DB);
+            Account := Get_Account (Ledger.Account_Id);
+         else
+            Rollback (DB);
+            Account.Error := 1;
          end if;
 
          return Account;
