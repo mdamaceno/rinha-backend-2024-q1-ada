@@ -1,7 +1,5 @@
 with Ada.Text_IO;
 with AWS.Server;
-with AWS.Server.Log;
-with AWS.Log;
 with AWS.Config;
 with AWS.Config.Set;
 
@@ -22,7 +20,6 @@ begin
    Ada.Text_IO.Put_Line ("AWS " & AWS.Version);
    AWS.Server.Start (WS, Callback => Api_CB.Service'Access, Config => AWS_Config);
 
-   AWS.Server.Log.Start (WS, Split_Mode => AWS.Log.Daily);
 
    loop
       null;
