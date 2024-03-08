@@ -2,9 +2,8 @@ with Models;
 
 package Repository is
 
-   function Create_Transaction
-      (Ledger : Models.Ledger_M)
-         return Models.Account_M;
+   procedure Create_Transaction
+      (Ledger : Models.Ledger_M; Account : out Models.Account_M);
 
    function Get_Account
       (Account_Id : Positive)

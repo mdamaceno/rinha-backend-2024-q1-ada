@@ -10,10 +10,11 @@ package body Repository is
    Select_Accounts_Stmt : constant Prepared_Statement := Prepare
       ("SELECT id, credit_limit, balance FROM accounts", Use_Cache => False, Index_By => Field_Index'First);
 
-   function Create_Transaction (Ledger : Models.Ledger_M) return Models.Account_M is
+   procedure Create_Transaction (Ledger : Models.Ledger_M; Account : out Models.Account_M) is
       Q          : SQL_Query;
       Ledgers_T  : constant Database.Public.T_Public_Ledgers := Database.Public.Ledgers;
       Session : constant Session_Type := Get_New_Session;
+      DB      : Database_Connection;
 
    begin
       Q := SQL_Insert
@@ -24,26 +25,17 @@ package body Repository is
                       (Ledgers_T.Account_Id = Ledger.Account_Id)
          );
 
-      declare
-         Account : Models.Account_M;
-         DB      : Database_Connection;
-      begin
-         DB := Session.DB;
+      DB := Session.DB;
 
+      Execute (DB, Q);
+
+      if Success (DB) then
+         Commit (DB);
          Account := Get_Account (Ledger.Account_Id);
-
-         Execute (DB, Q);
-
-         if Success (DB) then
-            Commit (DB);
-            Account := Get_Account (Ledger.Account_Id);
-         else
-            Rollback (DB);
-            Account.Error := 1;
-         end if;
-
-         return Account;
-      end;
+      else
+         Rollback (DB);
+         Account.Error := 1;
+      end if;
    end Create_Transaction;
 
    function Get_Account (

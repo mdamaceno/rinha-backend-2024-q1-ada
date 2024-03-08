@@ -60,6 +60,7 @@ package body Api_CB is
       T        : constant DTO.Transaction :=
          DTO.Make_Transaction_From_JSON (Str);
       Ledger   : Models.Ledger_M;
+      Account  : Models.Account_M;
 
    begin
       if T.Error > 0 then
@@ -73,22 +74,19 @@ package body Api_CB is
       Ledger.Description := T.Description;
       Ledger.Kind := Models.Kind_T'Value (T.Kind);
 
-      declare
-         Result : Models.Account_M;
-      begin
-         Result := Repository.Create_Transaction (Ledger);
+      Account := Repository.Get_Account (Ledger.Account_Id);
+      Repository.Create_Transaction (Ledger, Account);
 
-         if Result.Error = 1 then
-            return AWS.Response.Build
-               (AWS.MIME.Application_JSON,
-               "{""error"":""Exceeded credit limits""}", AWS.Messages.S422);
-         end if;
-
+      if Account.Error = 1 then
          return AWS.Response.Build
-            (AWS.MIME.Application_JSON, Response_Map.Transaction_JSON
-               (Result.Balance, Result.Credit_Limit)
-            );
-      end;
+            (AWS.MIME.Application_JSON,
+            "{""error"":""Exceeded credit limits""}", AWS.Messages.S422);
+      end if;
+
+      return AWS.Response.Build
+         (AWS.MIME.Application_JSON, Response_Map.Transaction_JSON
+            (Account.Balance, Account.Credit_Limit)
+         );
    end Post;
 
    function Service (Request : AWS.Status.Data) return AWS.Response.Data is
