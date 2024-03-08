@@ -1,6 +1,7 @@
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with Ada.Environment_Variables;
 with GNATCOLL.SQL.Postgres; use GNATCOLL.SQL.Postgres;
+with GNATCOLL.SQL.Exec; use GNATCOLL.SQL.Exec;
 with GNATCOLL.SQL.Sessions;
 
 package body DB_Connection is
@@ -21,6 +22,7 @@ package body DB_Connection is
                      Host => To_String (DB_Host),
                      Port => 5432);
 
-      GNATCOLL.SQL.Sessions.Setup (Descr => DB_Descr, Max_Sessions => 30);
+      GNATCOLL.SQL.Sessions.Setup
+         (Descr => DB_Descr, Max_Sessions => 50, Persist_Cascade => False);
    end Init;
 end DB_Connection;
