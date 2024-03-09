@@ -8,8 +8,6 @@ services:
     hostname: app01
     environment:
       DB_HOST: "db"
-    # volumes:
-    #   - .:/rinha
     networks:
       - rinha-network
     depends_on:
