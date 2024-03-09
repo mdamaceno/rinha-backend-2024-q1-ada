@@ -15,7 +15,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: "alr -n run"
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "0.45"
+    #       memory: "50MB"
 
   app02:
     <<: *app01
@@ -39,6 +43,11 @@ services:
       interval: 7s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.4"
+          memory: "420MB"
 
   nginx:
     image: nginx:1.25
@@ -52,6 +61,11 @@ services:
     depends_on:
       - app01
       - app02
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: "30MB"
 
 networks:
   rinha-network:
