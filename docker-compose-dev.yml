@@ -1,0 +1,58 @@
+version: '3.9'
+
+services:
+  app01: &app01
+    build:
+      dockerfile: dev.Dockerfile
+      context: .
+    hostname: app01
+    environment:
+      DB_HOST: "db"
+    networks:
+      - rinha-network
+    volumes:
+      - .:/rinha
+    depends_on:
+      db:
+        condition: service_healthy
+    command: "alr -n run"
+
+  app02:
+    <<: *app01
+    hostname: app02
+
+  db:
+    image: postgres:16-alpine
+    hostname: db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: rinha2024
+    volumes:
+      - ./docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 5432:5432
+    networks:
+      - rinha-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 7s
+      timeout: 5s
+      retries: 5
+
+  nginx:
+    image: nginx:1.25
+    ports:
+      - 9999:9999
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - rinha-network
+    restart: on-failure
+    depends_on:
+      - app01
+      - app02
+
+networks:
+  rinha-network:
+    driver: bridge
