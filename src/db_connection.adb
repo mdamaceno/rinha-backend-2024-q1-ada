@@ -23,6 +23,6 @@ package body DB_Connection is
                      Port => 5432);
 
       GNATCOLL.SQL.Sessions.Setup
-         (Descr => DB_Descr, Max_Sessions => 50, Persist_Cascade => False);
+         (Descr => DB_Descr, Max_Sessions => 1500, Persist_Cascade => False);
    end Init;
 end DB_Connection;
