@@ -2,10 +2,7 @@ version: '3.9'
 
 services:
   app01: &app01
-    build:
-      dockerfile: Dockerfile
-      context: .
-    hostname: app01
+    image: maadamaceno/rinha-backend-q1-2024-ada:latest
     environment:
       DB_HOST: "db"
     networks:
