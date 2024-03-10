@@ -23,7 +23,7 @@ docker-compose up
 Como o comando acima pode demorar um pouco devido a compilação, é melhor rodar o comando abaixo:
 
 ```bash
-docker-compose -f docker-compose.dev.yml up
+docker-compose -f docker-compose-dev.yml up
 ```
 
 A aplicação estará disponível para requisições na URL http://localhost:9999 com os seguintes endpoints:
