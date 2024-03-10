@@ -1,6 +1,6 @@
 # Rinha de Backend Q1 2024 - Ada
 
-Projeto criado para participar da rinha de backend do Q1 2024.
+Projeto criado para participar da (Rinha de backend Q1 2024)[https://github.com/zanfranceschi/rinha-de-backend-2024-q1].
 
 ## Tecnologias
 
@@ -18,6 +18,10 @@ Projeto criado para participar da rinha de backend do Q1 2024.
 
 ```bash
 docker-compose up
+```
+
+```bash
+make run
 ```
 
 Como o comando acima pode demorar um pouco devido a compilação, é melhor rodar o comando abaixo:
