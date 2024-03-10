@@ -15,11 +15,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: "0.45"
-    #       memory: "50MB"
+    command: "alr -n run"
+    deploy:
+      resources:
+        limits:
+          cpus: ${APP_CPU:-0}
+          memory: ${APP_MEM:-0}
 
   app02:
     <<: *app01

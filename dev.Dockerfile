@@ -11,5 +11,3 @@ RUN mv /tmp/bin/alr /usr/local/bin
 WORKDIR /rinha
 
 EXPOSE 9999
-
-CMD ["alr", "-n", "run"]
