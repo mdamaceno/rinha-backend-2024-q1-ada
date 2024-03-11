@@ -1,6 +1,6 @@
 # Rinha de Backend Q1 2024 - Ada
 
-Projeto criado para participar da (Rinha de backend Q1 2024)[https://github.com/zanfranceschi/rinha-de-backend-2024-q1].
+Projeto criado para participar da [Rinha de backend Q1 2024](https://github.com/zanfranceschi/rinha-de-backend-2024-q1).
 
 ## Tecnologias
 
